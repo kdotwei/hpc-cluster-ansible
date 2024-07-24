@@ -1,6 +1,0 @@
-[submodule "dhcp-ansible"]
-	path = dhcp-ansible
-	url = https://github.com/kdotwei/dhcp-ansible.git
-[submodule "munge-ansible"]
-	path = munge-ansible
-	url = https://github.com/kdotwei/munge-ansible.git
