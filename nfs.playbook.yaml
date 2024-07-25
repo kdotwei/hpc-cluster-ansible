@@ -1,0 +1,39 @@
+---
+- name: Update and upgrade apt packages
+  hosts: all
+  become: yes
+  tasks:
+    - become: true
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+- name: Install NFS server
+  hosts: head-node
+  become: yes
+  tasks:
+    - name: Install NFS kernel package
+      ansible.builtin.package:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Setting up NFS server
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        line: /home 192.168.1.0/24(rw,sync,no_subtree_check)
+        create: yes
+
+    - name: Reload NFS
+      command: exportfs -ra
+
+- name: Mount NFS direcoty on all compute nodes
+  hosts: compute-nodes
+  become: yes
+  tasks:
+    - name: Install NFS kernel package
+      ansible.builtin.package:
+        name: nfs-common
+        state: present
+
+    - name: Mount home directory
+      command: mount 192.168.1.1:/home /home

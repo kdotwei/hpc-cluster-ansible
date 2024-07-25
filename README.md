@@ -2,3 +2,4 @@
 
 1. dhcp
 2. munge
+3. nfs
