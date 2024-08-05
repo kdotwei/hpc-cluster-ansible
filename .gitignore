@@ -1,3 +1,5 @@
 inventory.ini
+inventory.yaml
+inventory.yml
 conf.d
 host_vars

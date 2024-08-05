@@ -1,0 +1,13 @@
+all:
+  hosts:
+    head-node:
+      ansible_host: node-1.beta.dev.cluster.sdc
+  children:
+    compute-nodes:
+      hosts:
+        node-2:
+          ansible_host: node-2.beta.dev.cluster.sdc
+        node-3:
+          ansible_host: node-3.beta.dev.cluster.sdc
+        node-4:
+          ansible_host: node-4.beta.dev.cluster.sdc
