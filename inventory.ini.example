@@ -1,9 +1,0 @@
-[head-node]
-node-1.alpha.dev.cluster.sdc
-
-[slurmdb-node]
-node-1.alpha.dev.cluster.sdc
-
-[compute-nodes]
-node-2.alpha.dev.cluster.sdc
-node-3.alpha.dev.cluster.sdc
