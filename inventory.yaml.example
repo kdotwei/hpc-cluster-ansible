@@ -5,6 +5,7 @@ all:
       interface_ip: 192.168.1.1
       interface: "ens19"
       interface_out: "ens18"
+      network: "10.1.1.0/24"
   children:
     compute-nodes:
       hosts:
@@ -20,3 +21,5 @@ all:
           ansible_host: node-4.beta.dev.cluster.sdc
           interface_ip: 192.168.1.4
           interface: "ens19"
+      vars:
+        nfs_host: 10.1.1.134
