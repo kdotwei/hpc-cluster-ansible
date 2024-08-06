@@ -20,7 +20,7 @@
     - name: Setting up NFS server
       ansible.builtin.lineinfile:
         path: /etc/exports
-        line: /home 192.168.1.0/24(rw,sync,no_subtree_check)
+        line: /home {{ network }}(rw,sync,no_subtree_check)
         create: yes
 
     - name: Reload NFS
@@ -36,4 +36,4 @@
         state: present
 
     - name: Mount home directory
-      command: mount 192.168.1.1:/home /home
+      command: mount {{ nfs_host }}:/home /home

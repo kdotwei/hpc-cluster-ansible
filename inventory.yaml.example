@@ -4,6 +4,7 @@ all:
       ansible_host: node-1.beta.dev.cluster.sdc
       interface_ip: 192.168.1.1
       interface: "ens19"
+      interface_out: "ens18"
   children:
     compute-nodes:
       hosts:

@@ -1,0 +1,14 @@
+---
+- name: Update and upgrade apt packages
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install build-essential, fakeroot, devscripts, equivs
+      ansible.builtin.package:
+        name:
+          - build-essential
+          - fakeroot
+          - devscripts
+          - equivs
+        state: present
+

@@ -68,13 +68,13 @@
         update_cache: yes
 
     - name: Set NAT POSTROUTING rule
-      command: iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
+      command: iptables -t nat -A POSTROUTING -o {{ interface }} -j MASQUERADE
 
     - name: Allow forwarded traffic related and established connections
-      command: iptables -A FORWARD -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      command: iptables -A FORWARD -i {{ interface }} -o {{ interface_out}} -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-    - name: Allow forwarded traffic from eth0 to wlan0
-      command: iptables -A FORWARD -i eth0 -o eth1 -j ACCEPT
+    - name: Allow forwarded traffic from {{ interface_out}} to wlan0
+      command: iptables -A FORWARD -i {{ interface_out}} -o {{ interface }} -j ACCEPT
 
     - name: Save iptables rules
       shell: iptables-save > /etc/iptables/rules.v4
