@@ -9,7 +9,7 @@
         upgrade: yes
 
 - name: Install NFS server
-  hosts: head-node
+  hosts: head_node
   become: yes
   tasks:
     - name: Install NFS kernel package
@@ -27,7 +27,7 @@
       command: exportfs -ra
 
 - name: Mount NFS direcoty on all compute nodes
-  hosts: compute-nodes
+  hosts: compute_nodes
   become: yes
   tasks:
     - name: Install NFS kernel package

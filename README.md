@@ -1,5 +1,5 @@
 # hpc-cluster-ansible
 
-1. dhcp
+1. nfs
 2. munge
-3. nfs
+3. slurm

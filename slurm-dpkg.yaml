@@ -1,10 +1,15 @@
 ---
-- name: Update and upgrade apt packages
+- name: Install required packages for building Debian packages
   hosts: all
   become: yes
   tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
     - name: Install build-essential, fakeroot, devscripts, equivs
-      ansible.builtin.package:
+      apt:
         name:
           - build-essential
           - fakeroot
@@ -12,3 +17,30 @@
           - equivs
         state: present
 
+- name: Download and build Slurm Debian packages
+  hosts: head_node
+  become: yes
+  tasks:
+    - get_url:
+        url: "{{ slurm_url }}"
+        dest: "/tmp/{{ slurm_version }}.tar.bz2"
+
+    - name: Unpack the distributed tarball
+      ansible.builtin.unarchive:
+        src: /tmp/{{ slurm_version }}.tar.bz2
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Change to Slurm source directory
+      ansible.builtin.shell: cd /tmp/{{ slurm_version }} && mk-build-deps -i debian/control
+      args:
+        chdir: /tmp/{{ slurm_version }}
+
+    - name: Build the Slurm packages
+      ansible.builtin.shell: cd /tmp/{{ slurm_version }} && debuild -b -uc -us
+      args:
+        chdir: /tmp/{{ slurm_version }}
+
+    - name: Move the built packages to a specified directory
+      ansible.builtin.command:
+        cmd: mv /tmp/*.deb ~/{{ slurm_version }}
