@@ -58,6 +58,11 @@
       args:
         chdir: /tmp/{{ slurm_version }}
 
-    - name: Move the built packages to a specified directory
-      ansible.builtin.command:
-        cmd: mv /tmp/*.deb ~/{{ slurm_version }}
+    - name: Make "/home/{{ slurm_version }}"
+      file:
+        path: "/home/{{ slurm_version }}"
+        state: directory
+
+    - name: Copy the built packages to a specified directory
+      ansible.builtin.shell: 
+        cmd: "cp -f /tmp/*.deb /home/{{ slurm_version }}/"
