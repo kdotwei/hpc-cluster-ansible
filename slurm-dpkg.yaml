@@ -8,20 +8,37 @@
         update_cache: yes
         upgrade: yes
 
-    - name: Install build-essential, fakeroot, devscripts, equivs
+    - name: Install htop
       apt:
-        name:
-          - build-essential
-          - fakeroot
-          - devscripts
-          - equivs
+        name: htop
+        state: present
+
+    - name: Install build-essential
+      apt:
+        name: build-essential
+        state: present
+
+    - name: Install fakeroot
+      apt:
+        name: fakeroot
+        state: present
+
+    - name: Install devscripts
+      apt:
+        name: devscripts
+        state: present
+
+    - name: Install equivs
+      apt:
+        name: equivs
         state: present
 
 - name: Download and build Slurm Debian packages
   hosts: head_node
   become: yes
   tasks:
-    - get_url:
+    - name: Get {{ slurm_url }}
+      get_url:
         url: "{{ slurm_url }}"
         dest: "/tmp/{{ slurm_version }}.tar.bz2"
 
@@ -31,13 +48,13 @@
         dest: /tmp/
         remote_src: yes
 
-    - name: Change to Slurm source directory
-      ansible.builtin.shell: cd /tmp/{{ slurm_version }} && mk-build-deps -i debian/control
+    - name: Make building dependencies
+      ansible.builtin.shell: yes | mk-build-deps -i debian/control
       args:
         chdir: /tmp/{{ slurm_version }}
 
     - name: Build the Slurm packages
-      ansible.builtin.shell: cd /tmp/{{ slurm_version }} && debuild -b -uc -us
+      ansible.builtin.shell: debuild -b -uc -us
       args:
         chdir: /tmp/{{ slurm_version }}
 

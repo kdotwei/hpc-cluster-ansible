@@ -1,0 +1,34 @@
+---
+- name: Install required packages for building Debian packages
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install htop
+      apt:
+        name: htop
+        state: present
+
+    - name: Install build-essential
+      apt:
+        name: build-essential
+        state: present
+
+    - name: Install fakeroot
+      apt:
+        name: fakeroot
+        state: present
+
+    - name: Install devscripts
+      apt:
+        name: devscripts
+        state: present
+
+    - name: Install equivs
+      apt:
+        name: equivs
+        state: present
