@@ -68,7 +68,7 @@
         update_cache: yes
 
     - name: Set NAT POSTROUTING rule
-      command: iptables -t nat -A POSTROUTING -o {{ interface }} -j MASQUERADE
+      command: iptables -t nat -A POSTROUTING -o {{ interface_out }} -j MASQUERADE
 
     - name: Allow forwarded traffic related and established connections
       command: iptables -A FORWARD -i {{ interface }} -o {{ interface_out}} -m state --state RELATED,ESTABLISHED -j ACCEPT
