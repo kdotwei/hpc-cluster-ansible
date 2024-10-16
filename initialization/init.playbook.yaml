@@ -1,37 +1,45 @@
 ---
 - name: Initialization
-  hosts: vpn
+  hosts: all
   become: yes
+  vars:
+    ssh_dir: "/home/{{ item.name }}/.ssh"
+    authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
   tasks:
-    - name: Update apt cache and upgrade all packages to the latest version
+    - name: Gets the latest time from this machine's RTC and sets the system time to that
+      command: hwclock --hctosys
+
+    - name: Update and upgrade apt packages
       apt:
         update_cache: yes
-        upgrade: dist
+        upgrade: yes
 
     - name: Install necessary packages
       apt:
-        name: iptables, vim, curl, wget, git, mtr, zsh
+        name: curl, wget, git, vim, zsh, iptables, iptables-persistent, tcpdump, mtr, tmux, htop
         state: present
 
-    - name: Install oh-my-zsh
-      command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    - name: Create users with a home directory
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo
+      loop: "{{ users }}"
 
-    - name: Change ZSH theme
-      lineinfile:
-        path: "~/.zshrc"
-        regexp: "^ZSH_THEME=.*"
-        line: "ZSH_THEME=\"jreese\""
+    - name: Create .ssh directory
+      file:
+        path: "{{ ssh_dir }}"
+        state: directory
+        owner: "{{ item.name }}"
+        group: "{{ item.name }}"
+        mode: '0700'
+      loop: "{{ users }}"
 
-# - name: Network Configuration
-#   hosts: vpn
-#   become: yes
-#   tasks:
-#     - name: Configure public network interface with static IP
-#       ansible.builtin.copy:
-#         dest: /etc/network/interfaces.d/{{ public_interface }}.cfg
-#         content: |
-#           auto {{ public_interface }}
-#           iface {{ public_interface }} inet static
-#           address {{ public_ip }}
-#           netmask {{ public_netmask }}
-#           gateway {{ public_gateway }}
+    - name: Append public key to authorized_keys w/subelements
+      authorized_key:
+        user: "{{ item.0.name }}"
+        key: "{{ item.1 }}"
+        state: present
+      loop: "{{ users | subelements('public_keys') }}"
+
