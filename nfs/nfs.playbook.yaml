@@ -1,0 +1,47 @@
+---
+- name: Initialization
+  hosts: all
+  become: yes
+  vars:
+    ssh_dir: "/home/{{ item.name }}/.ssh"
+    authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
+  tasks:
+    - name: Gets the latest time from this machine's RTC and sets the system time to that
+      command: hwclock --hctosys
+
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+- name: Install NFS server
+  hosts: head_node
+  become: yes
+  tasks:
+    - name: Install NFS kernel package
+      ansible.builtin.package:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Setting up NFS server
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        line: "{{ item }}"
+        create: yes
+      with_items:
+        - "/home {{ network }}(rw,sync,no_subtree_check)"
+
+    - name: Reload NFS
+      command: exportfs -ra
+
+- name: Mount NFS direcoty on all compute nodes
+  hosts: compute_nodes
+  become: yes
+  tasks:
+    - name: Install NFS kernel package
+      ansible.builtin.package:
+        name: nfs-common
+        state: present
+
+    - name: Mount home directory
+      command: mount {{ nfs_host }}:/home /home

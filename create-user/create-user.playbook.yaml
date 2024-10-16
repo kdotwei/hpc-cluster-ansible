@@ -1,0 +1,39 @@
+---
+- name: Initialization
+  hosts: all
+  become: yes
+  vars:
+    ssh_dir: "/home/{{ item.name }}/.ssh"
+    authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
+  tasks:
+    - name: Gets the latest time from this machine's RTC and sets the system time to that
+      command: hwclock --hctosys
+
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Create users with a home directory
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        shell: /bin/zsh
+        create_home: yes
+        groups: sudo
+      loop: "{{ users }}"
+
+    - name: Create .ssh directory
+      file:
+        path: "{{ ssh_dir }}"
+        state: directory
+        owner: "{{ item.name }}"
+        group: "{{ item.name }}"
+        mode: '0700'
+      loop: "{{ users }}"
+
+    - name: Append public key to authorized_keys w/subelements
+      authorized_key:
+        user: "{{ item.0.name }}"
+        key: "{{ item.1 }}"
+        state: present
+      loop: "{{ users | subelements('public_keys') }}"

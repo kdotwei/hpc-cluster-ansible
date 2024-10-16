@@ -1,0 +1,37 @@
+---
+- name: Initialization
+  hosts: vpn
+  become: yes
+  tasks:
+    - name: Update apt cache and upgrade all packages to the latest version
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install necessary packages
+      apt:
+        name: iptables, vim, curl, wget, git, mtr, zsh
+        state: present
+
+    - name: Install oh-my-zsh
+      command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    - name: Change ZSH theme
+      lineinfile:
+        path: "~/.zshrc"
+        regexp: "^ZSH_THEME=.*"
+        line: "ZSH_THEME=\"jreese\""
+
+# - name: Network Configuration
+#   hosts: vpn
+#   become: yes
+#   tasks:
+#     - name: Configure public network interface with static IP
+#       ansible.builtin.copy:
+#         dest: /etc/network/interfaces.d/{{ public_interface }}.cfg
+#         content: |
+#           auto {{ public_interface }}
+#           iface {{ public_interface }} inet static
+#           address {{ public_ip }}
+#           netmask {{ public_netmask }}
+#           gateway {{ public_gateway }}

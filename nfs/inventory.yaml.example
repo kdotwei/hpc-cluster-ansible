@@ -1,0 +1,20 @@
+all:
+  hosts:
+    head_node:
+      ansible_host: head.id10.hpc.sdc
+      network: "10.10.10.0/24"
+  children:
+    compute_nodes:
+      hosts:
+        node_2:
+          ansible_host: node2.id10.hpc.sdc
+        node_3:
+          ansible_host: node3.id10.hpc.sdc
+        node_4:
+          ansible_host: node4.id10.hpc.sdc
+      vars:
+        nfs_host: 10.10.10.1
+
+    login_node:
+      hosts:
+        head_node:
