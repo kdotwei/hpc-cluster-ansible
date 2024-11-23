@@ -1,7 +1,6 @@
 ---
 - name: Initialization
-  hosts: all
-  become: yes
+  hosts: compute_nodes
   vars:
     ssh_dir: "/home/{{ item.name }}/.ssh"
     authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
@@ -16,7 +15,7 @@
 
     - name: Install necessary packages
       apt:
-        name: curl, wget, git, vim, zsh, iptables, iptables-persistent, tcpdump, mtr, tmux, htop
+        name: sudo, curl, wget, git, vim, zsh, iptables, iptables-persistent, tcpdump, mtr, tmux, htop
         state: present
 
     - name: Create users with a home directory
@@ -42,4 +41,3 @@
         key: "{{ item.1 }}"
         state: present
       loop: "{{ users | subelements('public_keys') }}"
-

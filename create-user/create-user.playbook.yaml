@@ -1,6 +1,6 @@
 ---
-- name: Initialization
-  hosts: all
+- name: Create User
+  hosts: compute_nodes
   become: yes
   vars:
     ssh_dir: "/home/{{ item.name }}/.ssh"

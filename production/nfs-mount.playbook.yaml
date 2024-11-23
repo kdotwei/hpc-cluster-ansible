@@ -1,0 +1,16 @@
+- name: Mount NFS direcoty on all compute nodes
+  hosts: compute_nodes
+  become: yes
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install NFS kernel package
+      ansible.builtin.package:
+        name: nfs-common
+        state: present
+
+    - name: Mount home directory
+      command: mount {{ nfs_host }}:/home /home
