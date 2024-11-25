@@ -1,0 +1,57 @@
+---
+- name: Check if user added hosts into /etc/distcc/hosts
+  hosts: localhost
+  gather_facts: false
+  vars_prompt:
+    - name: user_confirmation
+      prompt: "Have you appended hosts in your cluster into the file /etc/distcc/hosts (yes)?\nAnswer"
+      private: no
+  tasks:
+    - ansible.builtin.fail:
+        msg: "Canceling process"
+      when: user_confirmation != 'yes'
+
+- name: Download and build Slurm Debian packages
+  hosts: head_node
+  become: yes
+  tasks:
+    - name: Create a directory
+      ansible.builtin.file:
+        path: /home/root
+        state: directory
+        mode: '0700'
+
+    - name: Create a directory
+      ansible.builtin.file:
+        path: /home/root/slurm
+        state: directory
+        mode: '0700'
+
+    - name: Get {{ slurm_url }}
+      get_url:
+        url: "{{ slurm_url }}"
+        dest: "/home/root/slurm/{{ slurm_ver }}.tar.bz2"
+    
+    - name: Unpack the distributed tarball
+      ansible.builtin.shell:
+        cmd: tar -xaf slurm*tar.bz2
+      args:
+        chdir: /home/root/slurm
+
+- name: Install the Slurm package dependencies
+  hosts: all
+  become: yes
+  tasks:
+    - ansible.builtin.shell:
+        cmd: mk-build-deps -i -t "apt -y" debian/control
+      args:
+        chdir: /home/root/slurm/{{ slurm_ver }}
+
+- name: Install the Slurm package dependencies
+  hosts: head_node
+  become: yes
+  tasks:
+    - ansible.builtin.shell:
+        cmd: debuild --set-envvar=CC=distcc -b -uc -us -j{{ job_num }}
+      args:
+        chdir: /home/root/slurm/{{ slurm_ver }}

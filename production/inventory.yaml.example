@@ -1,24 +1,27 @@
 all:
   hosts:
     head_node:
-      ansible_host: head.id10.hpc.sdc
+      ansible_host: <headnode-host-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
   children:
     compute_nodes:
       hosts:
         node_2:
-          ansible_host: node2.id10.hpc.sdc
+          ansible_host: <node2-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
         node_3:
-          ansible_host: node3.id10.hpc.sdc
+          ansible_host: <node3-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
         node_4:
-          ansible_host: node4.id10.hpc.sdc
+          ansible_host: <node4-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
       vars:
-        nfs_host: 10.10.10.1
+        nfs_host: 10.2.x.1 # NFS host IP address in your cluster LAN
 
     login_node:
       hosts:
         head_node:
   vars:
-    network: "10.2.210.0/24"
+    slurm_url: "https://download.schedmd.com/slurm/slurm-24.11.0-0rc2.tar.bz2"
+    slurm_ver: "slurm-24.11.0-0rc2"
+    job_num: 16 # The total number of core in your cluster
+    network: "10.2.210.0/24" # Your cluster LAN
     users:
       - name: user1
         public_keys:
