@@ -33,9 +33,17 @@
         name: distcc
         state: present
 
-    - name: Enable distcc
-      become: yes
-      command: distccd --daemon --allow 10.100.1.0/24
+    - name: Check if distccd is running
+      command: pgrep -f distccd
+      register: distccd_status
+      ignore_errors: yes
+
+    - name: Stop distccd daemon if running
+      command: pkill -f distccd
+      when: distccd_status.rc == 0
+
+    - name: Start distccd
+      command: distccd --daemon --allow "{{ network }}"
 
 # - name: Download and build Slurm Debian packages
 #   hosts: head_node

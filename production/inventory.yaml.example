@@ -2,7 +2,6 @@ all:
   hosts:
     head_node:
       ansible_host: head.id10.hpc.sdc
-      network: "10.10.10.0/24"
   children:
     compute_nodes:
       hosts:
@@ -19,6 +18,7 @@ all:
       hosts:
         head_node:
   vars:
+    network: "10.2.210.0/24"
     users:
       - name: user1
         public_keys:
