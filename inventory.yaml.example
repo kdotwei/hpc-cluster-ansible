@@ -1,37 +1,32 @@
 all:
   hosts:
     head_node:
-      ansible_host: node-1.beta.dev.cluster.sdc
-      interface_ip: 192.168.1.1
-      interface: "ens19"
-      interface_out: "ens18"
-      network: "10.1.1.0/24"
+      ansible_host: <headnode-host-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
   children:
     compute_nodes:
       hosts:
         node_2:
-          ansible_host: node-2.beta.dev.cluster.sdc
-          interface_ip: 192.168.1.2
-          interface: "ens19"
+          ansible_host: <node2-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
         node_3:
-          ansible_host: node-3.beta.dev.cluster.sdc
-          interface_ip: 192.168.1.3
-          interface: "ens19"
+          ansible_host: <node3-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
         node_4:
-          ansible_host: node-4.beta.dev.cluster.sdc
-          interface_ip: 192.168.1.4
-          interface: "ens19"
+          ansible_host: <node4-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
       vars:
-        nfs_host: 10.1.1.134
-
-    dhcp_node:
-      hosts:
-        head_node:
-
-    slurmdbd_node:
-      hosts:
-        head_node:
+        nfs_host: 10.2.x.1 # NFS host IP address in your cluster LAN
 
     login_node:
       hosts:
         head_node:
+  vars:
+    slurm_url: "https://download.schedmd.com/slurm/slurm-24.11.0-0rc2.tar.bz2"
+    slurm_ver: "slurm-24.11.0-0rc2"
+    job_num: 16 # The total number of core in your cluster
+    network: "10.2.210.0/24" # Your cluster LAN
+    users:
+      - name: user1
+        public_keys:
+          - "user1-public-key"
+      - name: user2
+        public_keys:
+          - "user2-public-key-1"
+          - "user2-public-key-2"
