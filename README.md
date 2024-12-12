@@ -3,7 +3,7 @@
 ## Check date and time
 
 ```bash
-ansible-playbook -i inventory.yaml time-adjust.playbook.yaml
+ansible-playbook -i inventory.yaml datetime-adjust.playbook.yaml
 ```
 
 ## Production
@@ -21,11 +21,11 @@ ansible-playbook -i inventory.yaml munge.playbook.yaml
 ```
 
 ```bash
-ansible-playbook -i inventory.yaml dependencies.playbook.yaml
+ansible-playbook -i inventory.yaml slurm-dependencies.playbook.yaml
 ```
 
 ```bash
-ansible-playbook -i inventory.yaml slurm-dpkg.playbook.yaml
+ansible-playbook -i inventory.yaml slurm-debbuild.playbook.yaml
 ```
 
 ```bash
