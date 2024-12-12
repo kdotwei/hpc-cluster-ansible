@@ -17,9 +17,14 @@ all:
     login_node:
       hosts:
         head_node:
+
+    db_node:
+      hosts:
+        head_node:
   vars:
     slurm_url: "https://download.schedmd.com/slurm/slurm-24.11.0-0rc2.tar.bz2"
-    slurm_ver: "slurm-24.11.0-0rc2"
+    slurm_version: "{{ slurm_url | regex_search('slurm-([\\d\\.\\w-]+)\\.tar\\.bz2', '\\1') | first }}"
+    slurm_filename: "{{ slurm_url | regex_search('(slurm-[\\d\\.\\w-]+)\\.tar\\.bz2', '\\1') | first }}"
     job_num: 16 # The total number of core in your cluster
     network: "10.2.210.0/24" # Your cluster LAN
     users:
