@@ -1,6 +1,8 @@
 ---
 - name: Initialization
   hosts: compute_nodes
+  gather_facts: yes
+  any_errors_fatal: true
   vars:
     ssh_dir: "/home/{{ item.name }}/.ssh"
     authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
