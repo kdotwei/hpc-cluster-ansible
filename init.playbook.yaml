@@ -1,19 +1,36 @@
 ---
-- name: Initialization
-  hosts: compute_nodes
+- hosts: all
   gather_facts: yes
   any_errors_fatal: true
   vars:
     ssh_dir: "/home/{{ item.name }}/.ssh"
     authorized_keys_file: "{{ ssh_dir }}/authorized_keys"
   tasks:
-    - name: Gets the latest time from this machine's RTC and sets the system time to that
-      command: hwclock --hctosys
+    - name: Ensure correct timezone is set
+      timezone:
+        name: "Asia/Taipei"
+
+    - name: Install NTP package
+      ansible.builtin.package:
+        name: ntp
+        state: present
+    
+    - name: Install NTPDate
+      apt:
+        name: ntpdate
+        state: present
+
+    - name: Adjust datetime
+      ansible.builtin.shell:
+        cmd: ntpdate TIME.google.com
 
     - name: Update and upgrade apt packages
       apt:
         update_cache: yes
         upgrade: yes
+
+    - name: Gets the latest time from this machine's RTC and sets the system time to that
+      command: hwclock --hctosys
 
     - name: Install necessary packages
       apt:
@@ -43,3 +60,35 @@
         key: "{{ item.1 }}"
         state: present
       loop: "{{ users | subelements('public_keys') }}"
+
+    - name: Create slurm users with a home directory
+      ansible.builtin.user:
+        name: slurm
+        shell: /bin/bash
+        create_home: yes
+
+- hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Update hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Install rsync
+      apt:
+        name: rsync
+        state: present
+
+    - name: Synchronize /etc/hosts files from localhost to hosts
+      ansible.builtin.synchronize:
+        src: ./configs/hosts
+        dest: /etc/hosts
+        delete: yes
+
+    - name: Enable the hostname
+      command: hostnamectl set-hostname {{ inventory_hostname }}
