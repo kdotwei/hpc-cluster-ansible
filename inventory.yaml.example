@@ -10,6 +10,10 @@ all:
       ansible_host: <node4-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
 
   children:
+    head_node:
+      hosts:
+        node1:
+
     compute_nodes:
       hosts:
         node2:
@@ -17,10 +21,6 @@ all:
         node4:
       vars:
         nfs_host: 10.2.x.1 # NFS host IP address in your cluster LAN
-
-    head_node:
-      hosts:
-        node1:
 
     login_node:
       hosts:

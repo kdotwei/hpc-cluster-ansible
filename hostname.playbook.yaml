@@ -1,0 +1,25 @@
+- hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Update hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Install rsync
+      apt:
+        name: rsync
+        state: present
+
+    - name: Synchronize /etc/hosts files from localhost to hosts
+      ansible.builtin.synchronize:
+        src: ./configs/hosts
+        dest: /etc/hosts
+        delete: yes
+
+    - name: Enable the hostname
+      command: hostnamectl set-hostname {{ inventory_hostname }}
