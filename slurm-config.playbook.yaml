@@ -1,0 +1,133 @@
+---
+- hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: Create /var/log/slurm directory
+      file:
+        path: /var/log/slurm
+        state: directory
+        mode: '0755'
+        owner: slurm
+        group: slurm
+    - name: Create /usr/local/slurm/ directory
+      file:
+        path: /usr/local/slurm/
+        state: directory
+        mode: '0755'
+        owner: slurm
+        group: slurm
+    - name: Create /usr/local/slurm/lib directory
+      file:
+        path: /usr/local/slurm/lib
+        state: directory
+        mode: '0755'
+        owner: slurm
+        group: slurm
+    - name: Create /var/log/slurm directory
+      file:
+        path: /var/log/slurm
+        state: directory
+        mode: '0755'
+        owner: slurm
+        group: slurm
+    - name: Create /etc/slurm directory
+      file:
+        path: /etc/slurm
+        state: directory
+        mode: '0755'
+        owner: slurm
+        group: slurm
+
+- hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: Create epilog file
+      ansible.builtin.file:
+        path: /usr/local/slurm/epilog
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+    
+    - name: Create prolog file
+      ansible.builtin.file:
+        path: /usr/local/slurm/prolog
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+    
+    - name: Create jobcomp file
+      ansible.builtin.file:
+        path: /var/log/slurm/jobcomp
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Create slurmctld.log file
+      ansible.builtin.file:
+        path: /var/log/slurm/slurmctld.log
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Create slurmd.log file
+      ansible.builtin.file:
+        path: /var/log/slurm/slurmd.log
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Create slurmd.spool file
+      ansible.builtin.file:
+        path: /var/spool/slurmd.spool
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Create slurm.state file
+      ansible.builtin.file:
+        path: /var/spool/slurm.state
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+- hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install rsync
+      apt:
+        name: rsync
+        state: present
+
+    - name: Synchronize /etc/slurm/slurm.conf files from localhost to hosts
+      ansible.builtin.synchronize:
+        src: ./configs/slurm.conf
+        dest: /etc/slurm/slurm.conf
+        delete: yes
+
+    - name: Synchronize /etc/hosts files from localhost to hosts
+      ansible.builtin.synchronize:
+        src: ./configs/hosts
+        dest: /etc/hosts
+        delete: yes
+
+    # - name: Delete file
+    #   file:
+    #     path: /etc/slurm.conf
+    #     state: absent
+
+    # - name: Delete file
+    #   file:
+    #     path: /etc/slurm/slurm.conf
+    #     state: absent

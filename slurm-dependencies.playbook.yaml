@@ -1,7 +1,6 @@
 ---
 - name: Install required packages for building Debian packages
   hosts: all
-  become: yes
   tasks:
     - name: Update and upgrade apt packages
       apt:

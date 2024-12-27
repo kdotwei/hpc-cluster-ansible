@@ -29,5 +29,5 @@ ansible-playbook -i inventory.yaml slurm-debbuild.playbook.yaml
 ```
 
 ```bash
-ansible-playbook -i inventory.yaml slurm-deployment.playbook.yaml
+ansible-playbook -i inventory.yaml slurm-config.playbook.yaml
 ```

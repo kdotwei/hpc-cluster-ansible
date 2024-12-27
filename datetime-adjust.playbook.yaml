@@ -2,7 +2,6 @@
 - hosts: all
   gather_facts: true
   any_errors_fatal: true
-  become: yes
   tasks:
     - name: Ensure correct timezone is set
       timezone:
@@ -23,7 +22,6 @@
         cmd: ntpdate TIME.google.com
 
     - name: Update and upgrade apt packages
-      become: true
       apt:
         update_cache: yes
         upgrade: yes

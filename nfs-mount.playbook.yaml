@@ -1,6 +1,5 @@
 - name: Mount NFS direcoty on all compute nodes
   hosts: compute_nodes
-  become: yes
   tasks:
     - name: Update and upgrade apt packages
       apt:

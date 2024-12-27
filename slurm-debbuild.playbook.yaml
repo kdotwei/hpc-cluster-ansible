@@ -34,20 +34,8 @@
       when: user_confirmation != 'yes'
 
 - hosts: head_node
-  become: yes
+  any_errors_fatal: true
   tasks:
-    - name: Create a directory
-      ansible.builtin.file:
-        path: /home/root
-        state: directory
-        mode: '0700'
-
-    - name: Create a directory
-      ansible.builtin.file:
-        path: /home/root/slurm
-        state: directory
-        mode: '0700'
-
     - name: Debug extracted variables
       debug:
         msg:
@@ -58,28 +46,28 @@
     - name: Get {{ slurm_url }}
       get_url:
         url: "{{ slurm_url }}"
-        dest: "/home/root/slurm/{{ slurm_filename }}.tar.bz2"
+        dest: "/home/slurm/{{ slurm_filename }}.tar.bz2"
     
     - name: Unpack the distributed tarball
       ansible.builtin.shell:
         cmd: tar -xaf slurm*tar.bz2
       args:
-        chdir: /home/root/slurm
+        chdir: /home/slurm
 
 - hosts: all
-  become: yes
+  any_errors_fatal: true
   tasks:
-    - name: Install the Slurm package dependencies
+    - name: Build the Slurm package depedencies
       ansible.builtin.shell:
         cmd: mk-build-deps -i -t "apt -y" debian/control
       args:
-        chdir: /home/root/slurm/{{ slurm_filename }}
+        chdir: /home/slurm/{{ slurm_filename }}
 
 - hosts: head_node
-  become: yes
+  any_errors_fatal: true
   tasks:
-    - name: Install the Slurm package dependencies
+    - name: Build the Slurm package
       ansible.builtin.shell:
         cmd: debuild --set-envvar=CC=distcc -b -uc -us -j{{ job_num }}
       args:
-        chdir: /home/root/slurm/{{ slurm_filename }}
+        chdir: /home/slurm/{{ slurm_filename }}

@@ -1,7 +1,6 @@
 ---
 - name: Setup clock and timezone
   hosts: all
-  become: yes
   tasks:
     - name: Ensure correct timezone is set
       timezone:
@@ -13,15 +12,12 @@
         state: present
 
     - name: Update and upgrade apt packages
-      become: true
       apt:
         update_cache: yes
         upgrade: yes
 
 - name: Install MUNGE on all nodes
   hosts: all
-  become: yes
-
   tasks:
     - name: Update APT package list
       apt:
@@ -35,7 +31,6 @@
 
 - name: Configure MUNGE on head node
   hosts: head_node
-  become: yes
   tasks:
     - name: Generate a new munge key
       command: dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024
@@ -67,7 +62,6 @@
 
 - name: Fetch file from head node
   hosts: head_node
-  become: yes
   tasks:
     - fetch:
         src: /etc/munge/munge.key
@@ -76,7 +70,6 @@
 
 - name: Copy file to compute nodes
   hosts: compute_nodes
-  become: yes
   tasks:
     - copy:
         src: /tmp/fetched
@@ -87,7 +80,6 @@
 
 - name: Restart MUNGE on all nodes
   hosts: all
-  become: yes
   tasks:
     - ansible.builtin.systemd:
         name: "munge"

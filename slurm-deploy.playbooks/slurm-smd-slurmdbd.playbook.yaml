@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Debug extracted variables
+      debug:
+        msg:
+          - "Slurm URL: {{ slurm_url }}"
+          - "Slurm Version: {{ slurm_version }}"
+          - "Slurm Filename: {{ slurm_filename }}"
+
+- hosts: localhost
+  gather_facts: false
+  vars_prompt:
+    - name: user_confirmation
+      prompt: "Are these variables correct? Type 'yes' to proceed.\nAnswer"
+      private: no
+  tasks:
+    - name: Stop process if user does not confirm
+      ansible.builtin.fail:
+        msg: "Canceling process because the variables were not confirmed."
+      when: user_confirmation != 'yes'
+
+- hosts: db_node
+  gather_facts: yes
+  any_errors_fatal: true
+  tasks:
+    - name: Setup the slurm-smd-slurmdbd	
+      ansible.builtin.shell:
+        cmd: dpkg -i /home/slurm/slurm-smd-slurmdbd_{{ slurm_version }}_amd64.deb
+      args:
+        chdir: /home/slurm
+
+    - name: Enable slurmdbd
+      ansible.builtin.shell:
+        cmd: systemctl enable slurmdbd
+      args:
+        chdir: /home/slurm

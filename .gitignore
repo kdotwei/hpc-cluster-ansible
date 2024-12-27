@@ -4,4 +4,5 @@ inventory.yml
 conf.d
 host_vars
 *.log
-temp.playbook.yaml
+temp*.playbook.yaml
+*.conf
