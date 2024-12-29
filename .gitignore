@@ -7,3 +7,5 @@ host_vars
 temp*.playbook.yaml
 *.conf
 hosts
+config
+keys/*

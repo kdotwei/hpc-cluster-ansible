@@ -20,3 +20,68 @@
 
     - name: Enable the hostname
       command: hostnamectl set-hostname {{ inventory_hostname }}
+
+- hosts: localhost
+  any_errors_fatal: true
+  tasks:
+    - name: Create keys directory
+      file:
+        path: ./keys
+        state: directory
+      delegate_to: localhost
+
+    - name: Check the key pair has been generated
+      stat:
+        path: ./keys/user@cluster
+      register: key_file
+      delegate_to: localhost
+
+    - name: Generate key pair
+      ansible.builtin.shell:
+        cmd: ssh-keygen -o -t ed25519 -f ./keys/user@cluster
+      when: not key_file.stat.exists
+
+- hosts: head_node
+  any_errors_fatal: true
+  tasks:
+    - name: Copy ssh config files from localhost to hosts
+      ansible.builtin.copy:
+        src: ./configs/config
+        dest: /home/user/.ssh/config
+        owner: user
+        group: user
+        mode: '0644'
+
+    - name: Copy public key files from localhost to hosts
+      ansible.builtin.copy:
+        src: ./keys/user@cluster.pub
+        dest: /home/user/.ssh/user@cluster.pub
+        owner: user
+        group: user
+        mode: '0644'
+
+    - name: Copy private key files from localhost to hosts
+      ansible.builtin.copy:
+        src: ./keys/user@cluster
+        dest: /home/user/.ssh/user@cluster
+        owner: user
+        group: user
+        mode: '0600'
+
+    - name: Ensure authorized_keys file exists
+      ansible.builtin.file:
+        path: /home/user/.ssh/authorized_keys
+        state: touch
+        owner: user
+        group: user
+        mode: '0600'
+
+    - name: Add public key to authorized_keys
+      ansible.builtin.lineinfile:
+        path: /home/user/.ssh/authorized_keys
+        line: "{{ lookup('file', './keys/user@cluster.pub') }}"
+        state: present
+        create: yes
+        owner: user
+        group: user
+        mode: '0600'
