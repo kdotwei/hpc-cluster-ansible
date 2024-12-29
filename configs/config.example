@@ -1,19 +1,19 @@
 HOST node1
 	hostname 10.2.210.1
 	user user
-	IdentityFile user@cluster
+	IdentityFile /home/user/.ssh/user@cluster
 
 HOST node2
 	hostname 10.2.210.2
 	user user
-	IdentityFile user@cluster
+	IdentityFile /home/user/.ssh/user@cluster
 
 HOST node3
 	hostname 10.2.210.3
 	user user
-	IdentityFile user@cluster
+	IdentityFile /home/user/.ssh/user@cluster
 
 HOST node4
 	hostname 10.2.210.4
 	user user
-	IdentityFile user@cluster
+	IdentityFile /home/user/.ssh/user@cluster
