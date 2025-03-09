@@ -13,3 +13,6 @@
 
     - name: Mount home directory
       command: mount {{ nfs_host }}:/home /home
+
+    - name: Mount opt directory
+      command: mount {{ nfs_host }}:/opt /opt

@@ -9,3 +9,4 @@ temp*.playbook.yaml
 hosts
 config
 keys/*
+*.bak

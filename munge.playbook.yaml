@@ -27,6 +27,7 @@
       apt:
         name:
           - munge
+          - libmunge-dev
         state: present
 
 - name: Configure MUNGE on head node
