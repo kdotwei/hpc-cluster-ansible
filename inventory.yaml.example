@@ -1,13 +1,28 @@
 all:
   hosts:
     node1:
-      ansible_host: <headnode-host-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
+      ansible_host: rpi-headnode-kwei
+      ansible_become: yes
     node2:
-      ansible_host: <node2-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
+      ansible_host: rpi-node1-kwei
+      ansible_become: yes
     node3:
-      ansible_host: <node3-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
+      ansible_host: rpi-node2-kwei
+      ansible_become: yes
     node4:
-      ansible_host: <node4-in-your-ssh-config> # In your SSH config file, the name you gave in the HOST field.
+      ansible_host: aipc-prod-1-kwei
+      ansible_become: yes
+      ansible_python_interpreter: /usr/bin/python3
+    node5:
+      ansible_host: example
+      ansible_become: yes
+      ansible_python_interpreter: /usr/bin/python3
+    node6:
+      ansible_host: 10.0.0.1
+      ansible_user: example
+      ansible_become: yes
+      ansible_become_password: example
+      ansible_ssh_private_key_file: ~/.ssh/key.example
 
   children:
     head_node:
@@ -19,16 +34,23 @@ all:
         node2:
         node3:
         node4:
+        node5:
       vars:
-        nfs_host: 10.2.x.1 # NFS host IP address in your cluster LAN
+        nfs_host: aicp-prod-1.amd.internal.sdc.nycu.club
 
     login_node:
       hosts:
-        node1:
+        node2:
 
     db_node:
       hosts:
         node1:
+    
+    ldap_clients:
+      hosts:
+        node1:
+        node2:
+        node3:
   vars:
     slurm_url: "https://download.schedmd.com/slurm/slurm-24.11.0-0rc2.tar.bz2"
     slurm_version: "{{ slurm_url | regex_search('slurm-([\\d\\.\\w-]+)\\.tar\\.bz2', '\\1') | first }}"
